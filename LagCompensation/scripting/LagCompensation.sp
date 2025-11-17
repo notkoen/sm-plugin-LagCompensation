@@ -1329,12 +1329,6 @@ public Action DisableLagCompTimer(Handle timer)
     return Plugin_Continue;
 }
 
-public Action OnLagCompSettings(int client, int args)
-{
-    ShowSettingsMenu(client);
-    return Plugin_Handled;
-}
-
 public Action OnToggleLagCompSettings(int client, int args)
 {
     ToggleLagCompSettings(client);
@@ -1349,8 +1343,8 @@ public void ToggleLagCompSettings(int client)
     char steamID[33];
 
     g_bDisableLagComp[client] = !g_bDisableLagComp[client];
-    g_hCookie_DisableLagComp.Set(client, g_bDisableLagComp[client] ? "1": "0");
-    PrintToChat(client, " \x04[LagCompensation] \x01LagCompensation has been %s.", g_bDisableLagComp[client] ? "disabled, this is not recommended" : "enabled (bosses only)");
+    g_hCookie_DisableLagComp.Set(client, g_bDisableLagComp[client] ? "1": "");
+    PrintToChat(client, " \x04[LagCompensation] \x01LagCompensation has been %s.", g_bDisableLagComp[client] ? "disabled, this is not recommended!" : "enabled (bosses only)");
 
     GetClientAuthId(client, AuthId_Steam2, steamID, sizeof(steamID), true);
     PrintToBoth("%N[%s] has %s LagCompensation", client, steamID, g_bDisableLagComp[client] ? "disabled" : "enabled");
@@ -1377,56 +1371,17 @@ public Action CheckLagComp(int client, int args)
     return Plugin_Handled;
 }
 
-public void ShowSettingsMenu(int client)
-{
-    Menu menu = new Menu(MenuHandler_MainMenu);
-    menu.SetTitle("LagCompensation Settings", client);
-    menu.ExitBackButton = true;
-
-    char sBuffer[128];
-    Format(sBuffer, sizeof(sBuffer), "LagCompensation: %s", g_bDisableLagComp[client] ? "Disabled" : "Enabled");
-    menu.AddItem("0", sBuffer);
-
-    menu.Display(client, MENU_TIME_FOREVER);
-}
-
 public void MenuHandler_CookieMenu(int client, CookieMenuAction action, any info, char[] buffer, int maxlen)
 {
     switch (action)
     {
         case (CookieMenuAction_DisplayOption):
         {
-            Format (buffer, maxlen, "LagCompensation", client);
+            Format (buffer, maxlen, "Lag Compensation", client);
         }
         case (CookieMenuAction_SelectOption):
         {
-            ShowSettingsMenu(client);
+            ToggleLagCompSettings(client);
         }
     }
-}
-
-public int MenuHandler_MainMenu(Menu menu, MenuAction action, int client, int selection)
-{
-    switch (action)
-    {
-        case (MenuAction_Select):
-        {
-            switch (selection)
-            {
-                case(0): ToggleLagCompSettings(client);
-            }
-
-            ShowSettingsMenu(client);
-        }
-        case (MenuAction_Cancel):
-        {
-            ShowCookieMenu(client);
-        }
-        case (MenuAction_End):
-        {
-            delete menu;
-        }
-    }
-
-    return 0;
 }
