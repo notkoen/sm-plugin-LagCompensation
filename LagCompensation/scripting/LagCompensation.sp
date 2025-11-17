@@ -5,7 +5,7 @@
 #include <dhooks>
 #include <clientprefs>
 
-#define PLUGIN_VERSION "1.0.4-GFL"
+#define PLUGIN_VERSION "1.0.5-NiDE"
 
 #define SetBit(%1,%2)       ((%1)[(%2) >> 5] |= (1 << ((%2) & 31)))
 #define ClearBit(%1,%2)     ((%1)[(%2) >> 5] &= ~(1 << ((%2) & 31)))
@@ -49,13 +49,13 @@ enum
 
 enum
 {
-    SOLID_NONE          = 0,    // no solid model
-    SOLID_BSP           = 1,    // a BSP tree
-    SOLID_BBOX          = 2,    // an AABB
-    SOLID_OBB           = 3,    // an OBB (not implemented yet)
-    SOLID_OBB_YAW       = 4,    // an OBB, constrained so that it can only yaw
-    SOLID_CUSTOM        = 5,    // Always call into the entity for tests
-    SOLID_VPHYSICS      = 6,    // solid vphysics object, get vcollide from the model and collide with that
+    SOLID_NONE     = 0,    // no solid model
+    SOLID_BSP      = 1,    // a BSP tree
+    SOLID_BBOX     = 2,    // an AABB
+    SOLID_OBB      = 3,    // an OBB (not implemented yet)
+    SOLID_OBB_YAW  = 4,    // an OBB, constrained so that it can only yaw
+    SOLID_CUSTOM   = 5,    // Always call into the entity for tests
+    SOLID_VPHYSICS = 6,    // solid vphysics object, get vcollide from the model and collide with that
     SOLID_LAST,
 };
 
@@ -166,12 +166,12 @@ public void OnPluginStart()
     CreateConVar("sm_lagcomp_version", PLUGIN_VERSION, "LagCompensation Version", FCVAR_SPONLY|FCVAR_NOTIFY|FCVAR_DONTRECORD).SetString(PLUGIN_VERSION);
 
     Handle hGameData = LoadGameConfigFile("LagCompensation.games");
-    if(!hGameData)
+    if (!hGameData)
         SetFailState("Failed to load LagCompensation gamedata.");
 
     // CBaseEntity::CalcAbsolutePosition
     StartPrepSDKCall(SDKCall_Entity);
-    if(!PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CalcAbsolutePosition"))
+    if (!PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CalcAbsolutePosition"))
     {
         delete hGameData;
         SetFailState("PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, \"CalcAbsolutePosition\") failed!");
@@ -180,7 +180,7 @@ public void OnPluginStart()
 
     // CCollisionProperty::MarkPartitionHandleDirty
     StartPrepSDKCall(SDKCall_Raw);
-    if(!PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "MarkPartitionHandleDirty"))
+    if (!PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "MarkPartitionHandleDirty"))
     {
         delete hGameData;
         SetFailState("PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, \"MarkPartitionHandleDirty\") failed!");
@@ -190,13 +190,13 @@ public void OnPluginStart()
 
     // ::UTIL_Remove
     g_hUTIL_Remove = DHookCreateFromConf(hGameData, "UTIL_Remove");
-    if(!g_hUTIL_Remove)
+    if (!g_hUTIL_Remove)
     {
         delete hGameData;
         SetFailState("Failed to setup detour for UTIL_Remove");
     }
 
-    if(!DHookEnableDetour(g_hUTIL_Remove, false, Detour_OnUTIL_Remove))
+    if (!DHookEnableDetour(g_hUTIL_Remove, false, Detour_OnUTIL_Remove))
     {
         delete hGameData;
         SetFailState("Failed to detour UTIL_Remove.");
@@ -204,13 +204,13 @@ public void OnPluginStart()
 
     // CCSGameRules::RestartRound
     g_hRestartRound = DHookCreateFromConf(hGameData, "CCSGameRules__RestartRound");
-    if(!g_hRestartRound)
+    if (!g_hRestartRound)
     {
         delete hGameData;
         SetFailState("Failed to setup detour for CCSGameRules__RestartRound");
     }
 
-    if(!DHookEnableDetour(g_hRestartRound, false, Detour_OnRestartRound))
+    if (!DHookEnableDetour(g_hRestartRound, false, Detour_OnRestartRound))
     {
         delete hGameData;
         SetFailState("Failed to detour CCSGameRules__RestartRound.");
@@ -218,13 +218,13 @@ public void OnPluginStart()
 
     // CLogicMeasureMovement::SetTarget
     g_hSetTarget = DHookCreateFromConf(hGameData, "CLogicMeasureMovement__SetTarget");
-    if(!g_hSetTarget)
+    if (!g_hSetTarget)
     {
         delete hGameData;
         SetFailState("Failed to setup detour for CLogicMeasureMovement__SetTarget");
     }
 
-    if(!DHookEnableDetour(g_hSetTarget, false, Detour_OnSetTargetPre))
+    if (!DHookEnableDetour(g_hSetTarget, false, Detour_OnSetTargetPre))
     {
         delete hGameData;
         SetFailState("Failed to detour CLogicMeasureMovement__SetTarget.");
@@ -232,13 +232,13 @@ public void OnPluginStart()
 
     // CLogicMeasureMovement::SetTarget (fix post hook crashing due to this pointer being overwritten)
     g_hSetTargetPost = DHookCreateFromConf(hGameData, "CLogicMeasureMovement__SetTarget_post");
-    if(!g_hSetTargetPost)
+    if (!g_hSetTargetPost)
     {
         delete hGameData;
         SetFailState("Failed to setup detour for CLogicMeasureMovement__SetTarget_post");
     }
 
-    if(!DHookEnableDetour(g_hSetTargetPost, true, Detour_OnSetTargetPost))
+    if (!DHookEnableDetour(g_hSetTargetPost, true, Detour_OnSetTargetPost))
     {
         delete hGameData;
         SetFailState("Failed to detour CLogicMeasureMovement__SetTarget_post.");
@@ -246,13 +246,13 @@ public void OnPluginStart()
 
     // CEntityTouchManager::FrameUpdatePostEntityThink
     g_hFrameUpdatePostEntityThink = DHookCreateFromConf(hGameData, "CEntityTouchManager__FrameUpdatePostEntityThink");
-    if(!g_hFrameUpdatePostEntityThink)
+    if (!g_hFrameUpdatePostEntityThink)
     {
         delete hGameData;
         SetFailState("Failed to setup detour for CEntityTouchManager__FrameUpdatePostEntityThink");
     }
 
-    if(!DHookEnableDetour(g_hFrameUpdatePostEntityThink, false, Detour_OnFrameUpdatePostEntityThink))
+    if (!DHookEnableDetour(g_hFrameUpdatePostEntityThink, false, Detour_OnFrameUpdatePostEntityThink))
     {
         delete hGameData;
         SetFailState("Failed to detour CEntityTouchManager__FrameUpdatePostEntityThink.");
@@ -260,7 +260,7 @@ public void OnPluginStart()
 
 
     g_iNetworkableOuter = GameConfGetOffset(hGameData, "CServerNetworkableProperty::m_pOuter");
-    if(g_iNetworkableOuter == -1)
+    if (g_iNetworkableOuter == -1)
     {
         delete hGameData;
         SetFailState("GameConfGetOffset(hGameData, \"CServerNetworkableProperty::m_pOuter\") failed!");
@@ -268,7 +268,7 @@ public void OnPluginStart()
 
 
     int offset = GameConfGetOffset(hGameData, "CGameRules::EndGameFrame");
-    if(offset == -1)
+    if (offset == -1)
     {
         delete hGameData;
         SetFailState("Failed to find CGameRules::EndGameFrame offset.");
@@ -276,7 +276,7 @@ public void OnPluginStart()
 
     // CGameRules::EndGameFrame
     g_hEndGameFrame = DHookCreate(offset, HookType_GameRules, ReturnType_Void, ThisPointer_Ignore, Hook_EndGameFrame);
-    if(g_hEndGameFrame == INVALID_HANDLE)
+    if (g_hEndGameFrame == INVALID_HANDLE)
     {
         delete hGameData;
         SetFailState("Failed to DHook CGameRules::EndGameFrame.");
@@ -285,11 +285,11 @@ public void OnPluginStart()
 
 
     hGameData = LoadGameConfigFile("sdktools.games");
-    if(!hGameData)
+    if (!hGameData)
         SetFailState("Failed to load sdktools gamedata.");
 
     offset = GameConfGetOffset(hGameData, "Activate");
-    if(offset == -1)
+    if (offset == -1)
     {
         delete hGameData;
         SetFailState("Failed to find Activate offset");
@@ -297,14 +297,14 @@ public void OnPluginStart()
 
     // CPhysForce::Activate
     g_hActivate = DHookCreate(offset, HookType_Entity, ReturnType_Void, ThisPointer_CBaseEntity, Hook_CPhysForce_Activate);
-    if(g_hActivate == INVALID_HANDLE)
+    if (g_hActivate == INVALID_HANDLE)
     {
         delete hGameData;
         SetFailState("Failed to DHookCreate Activate");
     }
 
     offset = GameConfGetOffset(hGameData, "AcceptInput");
-    if(offset == -1)
+    if (offset == -1)
     {
         delete hGameData;
         SetFailState("Failed to find AcceptInput offset.");
@@ -312,7 +312,7 @@ public void OnPluginStart()
 
     // CBaseEntity::AcceptInput( const char *szInputName, CBaseEntity *pActivator, CBaseEntity *pCaller, variant_t Value, int outputID )
     g_hAcceptInput = DHookCreate(offset, HookType_Entity, ReturnType_Bool, ThisPointer_CBaseEntity, Hook_AcceptInput);
-    if(g_hAcceptInput == INVALID_HANDLE)
+    if (g_hAcceptInput == INVALID_HANDLE)
     {
         delete hGameData;
         SetFailState("Failed to DHook AcceptInput.");
@@ -352,14 +352,14 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnLibraryRemoved(const char[] name)
 {
-    if(StrEqual(name, "PhysHooks"))
+    if (StrEqual(name, "PhysHooks"))
         g_bHasPhysHooks = false;
 }
 
 public void OnPluginEnd()
 {
     g_bCleaningUp = true;
-    if(g_bHasPhysHooks)
+    if (g_bHasPhysHooks)
     {
         FilterClientSolidTouch(g_aaFilterClientSolidTouch, false);
         BlockTriggerMoved(g_aBlockTriggerMoved, false);
@@ -368,15 +368,13 @@ public void OnPluginEnd()
 
     DHookDisableDetour(g_hUTIL_Remove, false, Detour_OnUTIL_Remove);
 
-    for(int i = 0; i < g_iNumEntities; i++)
+    for (int i = 0; i < g_iNumEntities; i++)
     {
-        if(!IsValidEntity(g_aEntityLagData[i].iEntity))
+        if (!IsValidEntity(g_aEntityLagData[i].iEntity))
             continue;
 
-        if(g_aEntityLagData[i].iDeleted)
-        {
+        if (g_aEntityLagData[i].iDeleted)
             RemoveEdict(g_aEntityLagData[i].iEntity);
-        }
     }
 }
 
@@ -408,32 +406,31 @@ public void OnMapStart()
     g_iCoordinateFrame = FindDataMapInfo(0, "m_rgflCoordinateFrame");
 
     /* Late Load */
-    if(bLate)
+    if (bLate)
     {
         for (int client = 1; client <= MaxClients; client++)
         {
-            if(IsClientInGame(client))
+            if (IsClientInGame(client))
             {
                 OnClientConnected(client);
-                if(AreClientCookiesCached(client))
+                if (AreClientCookiesCached(client))
                     OnClientCookiesCached(client);
+
                 OnClientSettingsChanged(client);
             }
         }
 
         int entity = INVALID_ENT_REFERENCE;
-        while((entity = FindEntityByClassname(entity, "*")) != INVALID_ENT_REFERENCE)
+        while ((entity = FindEntityByClassname(entity, "*")) != INVALID_ENT_REFERENCE)
         {
             char sClassname[64];
-            if(GetEntityClassname(entity, sClassname, sizeof(sClassname)))
+            if (GetEntityClassname(entity, sClassname, sizeof(sClassname)))
             {
                 OnEntityCreated(entity, sClassname);
                 OnEntitySpawned(entity, sClassname);
 
-                if(StrEqual(sClassname, "phys_thruster", false))
-                {
+                if (StrEqual(sClassname, "phys_thruster", false))
                     Hook_CPhysForce_Activate(entity);
-                }
             }
         }
     }
@@ -457,26 +454,13 @@ public void OnClientConnected(int client)
 public void OnClientCookiesCached(int client)
 {
     char sBuffer[16];
-    //char steamID[33];
-
-    //GetClientAuthId(client, AuthId_Steam2, steamID, sizeof(steamID), true);
     GetClientCookie(client, g_hCookie_DisableLagComp, sBuffer, sizeof(sBuffer));
-
-    if(sBuffer[0])
-    {
-        g_bDisableLagComp[client] = true;
-        //PrintToBoth("%N[%s] has joined with LagCompensation disabled", client, steamID);
-    }
-    else
-    {
-        g_bDisableLagComp[client] = false;
-        //PrintToBoth("%N[%s] has joined with LagCompensation enabled", client, steamID);
-    }
+    g_bDisableLagComp[client] = sBuffer[0] ? true : false;
 }
 
 public void OnClientSettingsChanged(int client)
 {
-    if(!IsClientInGame(client) || IsFakeClient(client))
+    if (!IsClientInGame(client) || IsFakeClient(client))
         return;
 
     float fLerpTime = GetEntPropFloat(client, Prop_Data, "m_fLerpTime");
@@ -491,37 +475,28 @@ public void OnClientDisconnect(int client)
 
 public void OnEntityCreated(int entity, const char[] classname)
 {
-    if(g_bCleaningUp)
+    if (g_bCleaningUp)
         return;
 
-    if(StrEqual(classname, "phys_thruster", false))
-    {
+    if (StrEqual(classname, "phys_thruster", false))
         DHookEntity(g_hActivate, true, entity);
-    }
-    else if(StrEqual(classname, "game_ui", false))
-    {
+    else if (StrEqual(classname, "game_ui", false))
         DHookEntity(g_hAcceptInput, true, entity);
-    }
 
-    // Disable trigger lag compensation
-    // if(!g_bHasOnEntitySpawned && (!strncmp(classname, "func_physbox", 12, false) || StrEqual(classname, "trigger_hurt", false) || StrEqual(classname, "trigger_push", false) || StrEqual(classname, "trigger_teleport", false)))
     if (!g_bHasOnEntitySpawned && !strncmp(classname, "func_physbox", 12, false))
-    {
         SDKHook(entity, SDKHook_SpawnPost, OnSDKHookEntitySpawnPost);
-    }
 }
 
 public void OnSDKHookEntitySpawnPost(int entity)
 {
     char classname[64];
     GetEntityClassname(entity, classname, sizeof(classname));
-
     OnEntitySpawned(entity, classname);
 }
 
 public void OnEntitySpawned(int entity, const char[] classname)
 {
-    if(g_bCleaningUp)
+    if (g_bCleaningUp)
         return;
 
     CheckEntityForLagComp(entity, classname);
@@ -529,20 +504,20 @@ public void OnEntitySpawned(int entity, const char[] classname)
 
 public MRESReturn Hook_AcceptInput(int entity, Handle hReturn, Handle hParams)
 {
-    if(!IsValidEntity(entity))
+    if (!IsValidEntity(entity))
         return MRES_Ignored;
 
     char sCommand[128];
     DHookGetParamString(hParams, 1, sCommand, sizeof(sCommand));
 
-    if(!StrEqual(sCommand, "Activate", false))
+    if (!StrEqual(sCommand, "Activate", false))
         return MRES_Ignored;
 
-    if(DHookIsNullParam(hParams, 3))
+    if (DHookIsNullParam(hParams, 3))
         return MRES_Ignored;
 
     int iCaller = DHookGetParam(hParams, 3);
-    if(iCaller <= 0 || iCaller >= MAX_EDICTS)
+    if (iCaller <= 0 || iCaller >= MAX_EDICTS)
         return MRES_Ignored;
 
     // Don't lagcompensate anything that has a game_ui button in their hierarchy.
@@ -553,7 +528,7 @@ public MRESReturn Hook_AcceptInput(int entity, Handle hReturn, Handle hParams)
 
 void BlacklistFamily(int entity)
 {
-    if(entity > 0 && entity < MAX_EDICTS)
+    if (entity > 0 && entity < MAX_EDICTS)
     {
         SetBit(g_aBlacklisted, entity);
         RemoveEntityFromLagCompensation(entity);
@@ -563,13 +538,13 @@ void BlacklistFamily(int entity)
     BlacklistChildren(entity);
 
     // And blacklist all parents and their children
-    for(;;)
+    for (;;)
     {
         entity = GetEntDataEnt2(entity, g_iParent);
-        if(entity == INVALID_ENT_REFERENCE)
+        if (entity == INVALID_ENT_REFERENCE)
             break;
 
-        if(entity > 0 && entity < MAX_EDICTS)
+        if (entity > 0 && entity < MAX_EDICTS)
         {
             SetBit(g_aBlacklisted, entity);
             RemoveEntityFromLagCompensation(entity);
@@ -583,12 +558,12 @@ void BlacklistFamily(int entity)
 void BlacklistChildren(int parent)
 {
     int entity = INVALID_ENT_REFERENCE;
-    while((entity = FindEntityByClassname(entity, "*")) != INVALID_ENT_REFERENCE)
+    while ((entity = FindEntityByClassname(entity, "*")) != INVALID_ENT_REFERENCE)
     {
-        if(GetEntDataEnt2(entity, g_iParent) != parent)
+        if (GetEntDataEnt2(entity, g_iParent) != parent)
             continue;
 
-        if(entity > 0 && entity < MAX_EDICTS)
+        if (entity > 0 && entity < MAX_EDICTS)
         {
             SetBit(g_aBlacklisted, entity);
             RemoveEntityFromLagCompensation(entity);
@@ -598,30 +573,26 @@ void BlacklistChildren(int parent)
 
 bool CheckEntityForLagComp(int entity, const char[] classname, bool bRecursive=false, bool bGoodParents=false)
 {
-    if(entity < 0 || entity > MAX_EDICTS)
+    if (entity < 0 || entity > MAX_EDICTS)
         return false;
 
-    if(!IsValidEntity(entity))
+    if (!IsValidEntity(entity))
         return false;
 
-    if(g_aLagCompensated[entity] != -1)
+    if (g_aLagCompensated[entity] != -1)
         return false;
 
     int SpawnFlags = GetEntData(entity, g_iSpawnFlags);
-    if(SpawnFlags & SF_LAGCOMP_DISABLE)
+    if (SpawnFlags & SF_LAGCOMP_DISABLE)
         return false;
 
-    // Disable trigger lag compensation
-    // bool bTrigger = StrEqual(classname, "trigger_hurt", false) ||
-    //              StrEqual(classname, "trigger_push", false) ||
-    //              StrEqual(classname, "trigger_teleport", false);
     bool bTrigger = false;
 
     bool bPhysbox = !strncmp(classname, "func_physbox", 12, false);
 
     bool bBlacklisted = CheckBit(g_aBlacklisted, entity);
 
-    if(!bTrigger && !bPhysbox || bBlacklisted)
+    if (!bTrigger && !bPhysbox || bBlacklisted)
         return false;
 
     // Don't lag compensate anything that could be parented to a player
@@ -629,60 +600,51 @@ bool CheckEntityForLagComp(int entity, const char[] classname, bool bRecursive=f
     // but we would overwrite that position change by restoring the entity to its previous state.
     int iParent = INVALID_ENT_REFERENCE;
     char sParentClassname[64];
-    for(int iTmp = entity;;)
+    for (int iTmp = entity;;)
     {
         iTmp = GetEntDataEnt2(iTmp, g_iParent);
-        if(iTmp == INVALID_ENT_REFERENCE)
+        if (iTmp == INVALID_ENT_REFERENCE)
             break;
 
         iParent = iTmp;
         GetEntityClassname(iParent, sParentClassname, sizeof(sParentClassname));
 
-        if((iParent >= 1 && iParent <= MaxClients) ||
-            !strncmp(sParentClassname, "weapon_", 7))
-        {
+        if ((iParent >= 1 && iParent <= MaxClients) || !strncmp(sParentClassname, "weapon_", 7))
             return false;
-        }
 
-        if(CheckBit(g_aBlacklisted, entity))
-        {
+        if (CheckBit(g_aBlacklisted, entity))
             return false;
-        }
 
-        if(g_aLagCompensated[iParent] != -1)
+        if (g_aLagCompensated[iParent] != -1)
         {
             bGoodParents = true;
             break;
         }
 
-        if(strncmp(sParentClassname, "func_", 5))
+        if (strncmp(sParentClassname, "func_", 5))
             continue;
 
-        if(StrEqual(sParentClassname[5], "movelinear") ||
-            StrEqual(sParentClassname[5], "door") ||
-            StrEqual(sParentClassname[5], "rotating") ||
-            StrEqual(sParentClassname[5], "tracktrain"))
+        if (StrEqual(sParentClassname[5], "movelinear") || StrEqual(sParentClassname[5], "door") ||
+            StrEqual(sParentClassname[5], "rotating") || StrEqual(sParentClassname[5], "tracktrain"))
         {
             bGoodParents = true;
             break;
         }
     }
 
-    if(!bGoodParents)
+    if (!bGoodParents)
         return false;
 
-    if(AddEntityForLagCompensation(entity, bTrigger))
+    if (AddEntityForLagCompensation(entity, bTrigger))
     {
-        if(bTrigger)
+        if (bTrigger)
         {
-            if(!(SpawnFlags & (SF_TRIGGER_ALLOW_PUSHABLES | SF_TRIGGER_ALLOW_PHYSICS | SF_TRIGGER_ALLOW_ALL | SF_TRIG_TOUCH_DEBRIS)))
+            if (!(SpawnFlags & (SF_TRIGGER_ALLOW_PUSHABLES | SF_TRIGGER_ALLOW_PHYSICS | SF_TRIGGER_ALLOW_ALL | SF_TRIG_TOUCH_DEBRIS)))
                 SetBit(g_aBlockTriggerMoved, entity);
         }
 
-        if(bRecursive)
-        {
+        if (bRecursive)
             CheckEntityChildrenForLagComp(entity);
-        }
 
         return true;
     }
@@ -693,13 +655,13 @@ bool CheckEntityForLagComp(int entity, const char[] classname, bool bRecursive=f
 void CheckEntityChildrenForLagComp(int parent)
 {
     int entity = INVALID_ENT_REFERENCE;
-    while((entity = FindEntityByClassname(entity, "*")) != INVALID_ENT_REFERENCE)
+    while ((entity = FindEntityByClassname(entity, "*")) != INVALID_ENT_REFERENCE)
     {
-        if(GetEntDataEnt2(entity, g_iParent) != parent)
+        if (GetEntDataEnt2(entity, g_iParent) != parent)
             continue;
 
         char sClassname[64];
-        if(GetEntityClassname(entity, sClassname, sizeof(sClassname)))
+        if (GetEntityClassname(entity, sClassname, sizeof(sClassname)))
         {
             CheckEntityForLagComp(entity, sClassname, _, true);
             CheckEntityChildrenForLagComp(entity);
@@ -709,16 +671,16 @@ void CheckEntityChildrenForLagComp(int parent)
 
 public void OnEntityDestroyed(int entity)
 {
-    if(g_bCleaningUp)
+    if (g_bCleaningUp)
         return;
 
-    if(entity < 0 || entity > MAX_EDICTS)
+    if (entity < 0 || entity > MAX_EDICTS)
         return;
 
     ClearBit(g_aBlacklisted, entity);
 
     int iIndex = g_aLagCompensated[entity];
-    if(iIndex == -1)
+    if (iIndex == -1)
         return;
 
     RemoveRecord(iIndex);
@@ -727,32 +689,30 @@ public void OnEntityDestroyed(int entity)
 
 public MRESReturn Detour_OnUTIL_Remove(Handle hParams)
 {
-    if(g_bCleaningUp)
+    if (g_bCleaningUp)
         return MRES_Ignored;
 
-    if(DHookIsNullParam(hParams, 1))
+    if (DHookIsNullParam(hParams, 1))
         return MRES_Ignored;
 
     int entity = DHookGetParamObjectPtrVar(hParams, 1, g_iNetworkableOuter, ObjectValueType_CBaseEntityPtr);
-    if(entity < 0 || entity > MAX_EDICTS)
+    if (entity < 0 || entity > MAX_EDICTS)
         return MRES_Ignored;
 
     int iIndex = g_aLagCompensated[entity];
-    if(iIndex == -1)
+    if (iIndex == -1)
         return MRES_Ignored;
 
     // let it die
-    if(!g_aEntityLagData[iIndex].bLateKill)
+    if (!g_aEntityLagData[iIndex].bLateKill)
         return MRES_Ignored;
 
     // ignore sleeping entities
-    if(g_aEntityLagData[iIndex].iNotMoving >= MAX_RECORDS)
+    if (g_aEntityLagData[iIndex].iNotMoving >= MAX_RECORDS)
         return MRES_Ignored;
 
-    if(!g_aEntityLagData[iIndex].iDeleted)
-    {
+    if (!g_aEntityLagData[iIndex].iDeleted)
         g_aEntityLagData[iIndex].iDeleted = GetGameTickCount();
-    }
 
     return MRES_Supercede;
 }
@@ -761,7 +721,7 @@ public MRESReturn Detour_OnRestartRound()
 {
     g_bCleaningUp = true;
 
-    for(int i = 0; i < g_iNumEntities; i++)
+    for (int i = 0; i < g_iNumEntities; i++)
     {
         int iEntity = g_aEntityLagData[i].iEntity;
 
@@ -769,21 +729,19 @@ public MRESReturn Detour_OnRestartRound()
         ClearBit(g_aBlockTriggerTouchPlayers, iEntity);
         ClearBit(g_aBlockTriggerMoved, iEntity);
 
-        for(int client = 1; client <= MaxClients; client++)
-        {
+        for (int client = 1; client <= MaxClients; client++)
             ClearBit(g_aaFilterClientSolidTouch, client * MAX_EDICTS + iEntity);
-        }
 
-        if(g_aEntityLagData[i].iDeleted)
+        if (g_aEntityLagData[i].iDeleted)
         {
-            if(IsValidEntity(iEntity))
+            if (IsValidEntity(iEntity))
                 RemoveEdict(iEntity);
         }
 
         g_aEntityLagData[i].iEntity = INVALID_ENT_REFERENCE;
     }
 
-    for(int i = 0; i < sizeof(g_aBlacklisted); i++)
+    for (int i = 0; i < sizeof(g_aBlacklisted); i++)
         g_aBlacklisted[i] = 0;
 
     g_iNumEntities = 0;
@@ -799,14 +757,15 @@ public MRESReturn Detour_OnSetTargetPre(int pThis, Handle hParams)
     g_OnSetTarget_pThis = pThis;
     return MRES_Ignored;
 }
+
 public MRESReturn Detour_OnSetTargetPost(Handle hParams)
 {
     int entity = GetEntPropEnt(g_OnSetTarget_pThis, Prop_Data, "m_hTarget");
-    if(!IsValidEntity(entity))
+    if (!IsValidEntity(entity))
         return MRES_Ignored;
 
     char sClassname[64];
-    if(!GetEntityClassname(entity, sClassname, sizeof(sClassname)))
+    if (!GetEntityClassname(entity, sClassname, sizeof(sClassname)))
         return MRES_Ignored;
 
     CheckEntityForLagComp(entity, sClassname, true, true);
@@ -817,11 +776,11 @@ public MRESReturn Detour_OnSetTargetPost(Handle hParams)
 public MRESReturn Hook_CPhysForce_Activate(int entity)
 {
     int attachedObject = GetEntPropEnt(entity, Prop_Data, "m_attachedObject");
-    if(!IsValidEntity(attachedObject))
+    if (!IsValidEntity(attachedObject))
         return MRES_Ignored;
 
     char sClassname[64];
-    if(!GetEntityClassname(attachedObject, sClassname, sizeof(sClassname)))
+    if (!GetEntityClassname(attachedObject, sClassname, sizeof(sClassname)))
         return MRES_Ignored;
 
     CheckEntityForLagComp(attachedObject, sClassname, true, true);
@@ -831,7 +790,7 @@ public MRESReturn Hook_CPhysForce_Activate(int entity)
 
 public MRESReturn Detour_OnFrameUpdatePostEntityThink()
 {
-    for(int i = 0; i < g_iNumEntities; i++)
+    for (int i = 0; i < g_iNumEntities; i++)
     {
         // Don't make the entity check untouch in FrameUpdatePostEntityThink.
         // If the player didn't get simulated in the current frame then
@@ -843,7 +802,6 @@ public MRESReturn Detour_OnFrameUpdatePostEntityThink()
     }
 }
 
-
 public void OnRunThinkFunctions(bool simulating)
 {
     g_iGameTick = GetGameTickCount();
@@ -852,7 +810,7 @@ public void OnRunThinkFunctions(bool simulating)
 
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
-    if(!IsPlayerAlive(client) || IsFakeClient(client))
+    if (!IsPlayerAlive(client) || IsFakeClient(client))
         return Plugin_Continue;
 
     int iTargetTick = tickcount - g_aLerpTicks[client];
@@ -868,46 +826,45 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
     // This is so we only skip single ticks at a time. Fully ON = 0, Fully OFF = MAX_RECORDS
     iDelta -= g_iDisableLagComp[client];
 
-    if(iDelta < 0)
+    if (iDelta < 0)
         iDelta = 0;
-    if(iDelta > MAX_RECORDS)
+
+    if (iDelta > MAX_RECORDS)
         iDelta = MAX_RECORDS;
 
     int iPlayerSimTick = g_iGameTick - iDelta;
 
-    for(int i = 0; i < g_iNumEntities; i++)
+    for (int i = 0; i < g_iNumEntities; i++)
     {
         int iEntity = g_aEntityLagData[i].iEntity;
 
         // Entity too new, the client couldn't even see it yet.
-        if(g_aEntityLagData[i].iSpawned > iPlayerSimTick)
+        if (g_aEntityLagData[i].iSpawned > iPlayerSimTick)
         {
             SetBit(g_aaFilterClientSolidTouch, client * MAX_EDICTS + iEntity);
             continue;
         }
 
-        if(g_aEntityLagData[i].iDeleted)
+        if (g_aEntityLagData[i].iDeleted)
         {
-            if(g_aEntityLagData[i].iDeleted <= iPlayerSimTick)
+            if (g_aEntityLagData[i].iDeleted <= iPlayerSimTick)
             {
                 SetBit(g_aaFilterClientSolidTouch, client * MAX_EDICTS + iEntity);
                 continue;
             }
         }
         else
-        {
             ClearBit(g_aaFilterClientSolidTouch, client * MAX_EDICTS + iEntity);
-        }
 
-        if(g_aEntityLagData[i].iNotMoving >= MAX_RECORDS)
+        if (g_aEntityLagData[i].iNotMoving >= MAX_RECORDS)
             continue;
 
         int iRecord = iDelta;
-        if(iRecord >= g_aEntityLagData[i].iNumRecords)
+        if (iRecord >= g_aEntityLagData[i].iNumRecords)
             iRecord = g_aEntityLagData[i].iNumRecords - 1;
 
         int iRecordIndex = g_aEntityLagData[i].iRecordIndex - iRecord;
-        if(iRecordIndex < 0)
+        if (iRecordIndex < 0)
             iRecordIndex += MAX_RECORDS;
 
         RestoreEntityFromRecord(iEntity, g_aaLagRecords[i][iRecordIndex]);
@@ -919,9 +876,9 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 public void OnPostPlayerThinkFunctions()
 {
-    for(int i = 0; i < g_iNumEntities; i++)
+    for (int i = 0; i < g_iNumEntities; i++)
     {
-        if(!g_aEntityLagData[i].bRestore)
+        if (!g_aEntityLagData[i].bRestore)
             continue;
 
         RestoreEntityFromRecord(g_aEntityLagData[i].iEntity, g_aaLagRecords[i][g_aEntityLagData[i].iRecordIndex]);
@@ -933,11 +890,11 @@ public void OnPostPlayerThinkFunctions()
 
 public MRESReturn Hook_EndGameFrame()
 {
-    for(int i = 0; i < g_iNumEntities; i++)
+    for (int i = 0; i < g_iNumEntities; i++)
     {
-        if(g_aEntityLagData[i].iDeleted)
+        if (g_aEntityLagData[i].iDeleted)
         {
-            if(g_aEntityLagData[i].iDeleted + MAX_RECORDS <= g_iGameTick)
+            if (g_aEntityLagData[i].iDeleted + MAX_RECORDS <= g_iGameTick)
             {
                 // calls OnEntityDestroyed right away
                 // which calls RemoveRecord
@@ -946,11 +903,11 @@ public MRESReturn Hook_EndGameFrame()
                 i--; continue;
             }
 
-            if(g_aEntityLagData[i].iRecordsValid)
+            if (g_aEntityLagData[i].iRecordsValid)
             {
                 g_aEntityLagData[i].iRecordIndex++;
 
-                if(g_aEntityLagData[i].iRecordIndex >= MAX_RECORDS)
+                if (g_aEntityLagData[i].iRecordIndex >= MAX_RECORDS)
                     g_aEntityLagData[i].iRecordIndex = 0;
 
                 g_aEntityLagData[i].iRecordsValid--;
@@ -966,26 +923,24 @@ public MRESReturn Hook_EndGameFrame()
         {
             int iOldRecord = g_aEntityLagData[i].iRecordIndex;
 
-            if(CompareVectors(g_aaLagRecords[i][iOldRecord].vecAbsOrigin, TmpRecord.vecAbsOrigin) &&
+            if (CompareVectors(g_aaLagRecords[i][iOldRecord].vecAbsOrigin, TmpRecord.vecAbsOrigin) &&
                 CompareVectors(g_aaLagRecords[i][iOldRecord].angAbsRotation, TmpRecord.angAbsRotation))
             {
                 g_aEntityLagData[i].iNotMoving++;
             }
             else
-            {
                 g_aEntityLagData[i].iNotMoving = 0;
-            }
 
-            if(g_aEntityLagData[i].iNotMoving >= MAX_RECORDS)
+            if (g_aEntityLagData[i].iNotMoving >= MAX_RECORDS)
                 continue;
         }
 
         g_aEntityLagData[i].iRecordIndex++;
 
-        if(g_aEntityLagData[i].iRecordIndex >= MAX_RECORDS)
+        if (g_aEntityLagData[i].iRecordIndex >= MAX_RECORDS)
             g_aEntityLagData[i].iRecordIndex = 0;
 
-        if(g_aEntityLagData[i].iNumRecords < MAX_RECORDS)
+        if (g_aEntityLagData[i].iNumRecords < MAX_RECORDS)
             g_aEntityLagData[i].iRecordsValid = ++g_aEntityLagData[i].iNumRecords;
 
         LagRecord_Copy(g_aaLagRecords[i][g_aEntityLagData[i].iRecordIndex], TmpRecord);
@@ -993,7 +948,6 @@ public MRESReturn Hook_EndGameFrame()
 
     return MRES_Ignored;
 }
-
 
 void RecordDataIntoRecord(int iEntity, LagRecord Record)
 {
@@ -1017,11 +971,11 @@ void RecordDataIntoRecord(int iEntity, LagRecord Record)
 bool DoesRotationInvalidateSurroundingBox(int iEntity)
 {
     int SolidFlags = GetEntData(iEntity, g_iSolidFlags);
-    if(SolidFlags & FSOLID_ROOT_PARENT_ALIGNED)
+    if (SolidFlags & FSOLID_ROOT_PARENT_ALIGNED)
         return true;
 
     int SurroundType = GetEntData(iEntity, g_iSurroundType);
-    switch(SurroundType)
+    switch (SurroundType)
     {
         case USE_COLLISION_BOUNDS_NEVER_VPHYSICS,
              USE_OBB_COLLISION_BOUNDS,
@@ -1058,7 +1012,7 @@ void InvalidatePhysicsRecursive(int iEntity)
     Address CollisionProp = GetEntityAddress(iEntity) + view_as<Address>(g_iCollision);
     SDKCall(g_hMarkPartitionHandleDirty, CollisionProp);
 
-    if(DoesRotationInvalidateSurroundingBox(iEntity))
+    if (DoesRotationInvalidateSurroundingBox(iEntity))
     {
         // CollisionProp()->MarkSurroundingBoundsDirty();
         int EFlags = GetEntData(iEntity, g_iEFlags);
@@ -1081,13 +1035,12 @@ void RestoreEntityFromRecord(int iEntity, LagRecord Record)
     InvalidatePhysicsRecursive(iEntity);
 }
 
-
 bool AddEntityForLagCompensation(int iEntity, bool bLateKill)
 {
-    if(g_bCleaningUp)
+    if (g_bCleaningUp)
         return false;
 
-    if(g_iNumEntities == MAX_ENTITIES)
+    if (g_iNumEntities == MAX_ENTITIES)
     {
         char sClassname[64];
         GetEntityClassname(iEntity, sClassname, sizeof(sClassname));
@@ -1101,7 +1054,7 @@ bool AddEntityForLagCompensation(int iEntity, bool bLateKill)
         return false;
     }
 
-    if(g_aLagCompensated[iEntity] != -1)
+    if (g_aLagCompensated[iEntity] != -1)
         return false;
 
     int i = g_iNumEntities;
@@ -1119,13 +1072,10 @@ bool AddEntityForLagCompensation(int iEntity, bool bLateKill)
     g_aEntityLagData[i].bRestore = false;
     g_aEntityLagData[i].bLateKill = bLateKill;
 
-    if(bLateKill)
-    {
+    if (bLateKill)
         SetBit(g_aBlockTriggerTouchPlayers, iEntity);
-    }
 
     RecordDataIntoRecord(iEntity, g_aaLagRecords[i][0]);
-
     {
         char sClassname[64];
         GetEntityClassname(iEntity, sClassname, sizeof(sClassname));
@@ -1144,7 +1094,7 @@ bool AddEntityForLagCompensation(int iEntity, bool bLateKill)
 bool RemoveEntityFromLagCompensation(int iEntity)
 {
     int index = g_aLagCompensated[iEntity];
-    if(index == -1)
+    if (index == -1)
         return false;
 
     RemoveRecord(index);
@@ -1153,12 +1103,12 @@ bool RemoveEntityFromLagCompensation(int iEntity)
 
 void RemoveRecord(int index)
 {
-    if(g_bCleaningUp)
+    if (g_bCleaningUp)
         return;
 
     int iEntity = g_aEntityLagData[index].iEntity;
 
-    if(IsValidEntity(iEntity))
+    if (IsValidEntity(iEntity))
     {
         char sClassname[64];
         GetEntityClassname(g_aEntityLagData[index].iEntity, sClassname, sizeof(sClassname));
@@ -1175,14 +1125,12 @@ void RemoveRecord(int index)
     ClearBit(g_aBlockTriggerTouchPlayers, iEntity);
     ClearBit(g_aBlockTriggerMoved, iEntity);
 
-    for(int client = 1; client <= MaxClients; client++)
-    {
+    for (int client = 1; client <= MaxClients; client++)
         ClearBit(g_aaFilterClientSolidTouch, client * MAX_EDICTS + iEntity);
-    }
 
     g_aEntityLagData[index].iEntity = INVALID_ENT_REFERENCE;
 
-    for(int src = index + 1; src < g_iNumEntities; src++)
+    for (int src = index + 1; src < g_iNumEntities; src++)
     {
         int dest = src - 1;
 
@@ -1191,10 +1139,8 @@ void RemoveRecord(int index)
         g_aLagCompensated[g_aEntityLagData[dest].iEntity] = dest;
 
         int iNumRecords = g_aEntityLagData[dest].iNumRecords;
-        for(int i = 0; i < iNumRecords; i++)
-        {
+        for (int i = 0; i < iNumRecords; i++)
             LagRecord_Copy(g_aaLagRecords[dest][i], g_aaLagRecords[src][i]);
-        }
     }
 
     g_iNumEntities--;
@@ -1215,7 +1161,7 @@ void EntityLagData_Copy(EntityLagData obj, const EntityLagData other)
 
 void LagRecord_Copy(LagRecord obj, const LagRecord other)
 {
-    for(int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; i++)
     {
         obj.vecOrigin[i] = other.vecOrigin[i];
         obj.vecAbsOrigin[i] = other.vecAbsOrigin[i];
@@ -1227,10 +1173,8 @@ void LagRecord_Copy(LagRecord obj, const LagRecord other)
 
     obj.flSimulationTime = other.flSimulationTime;
 
-    for(int i = 0; i < COORDINATE_FRAME_SIZE; i++)
-    {
+    for (int i = 0; i < COORDINATE_FRAME_SIZE; i++)
         obj.rgflCoordinateFrame[i] = other.rgflCoordinateFrame[i];
-    }
 }
 
 bool CompareVectors(const float vec1[3], const float vec2[3])
@@ -1238,10 +1182,9 @@ bool CompareVectors(const float vec1[3], const float vec2[3])
     return vec1[0] == vec2[0] && vec1[1] == vec2[1] && vec1[2] == vec2[2];
 }
 
-
 public Action Command_AddLagCompensation(int client, int argc)
 {
-    if(argc < 1)
+    if (argc < 1)
     {
         ReplyToCommand(client, "[SM] Usage: sm_unlag <entidx> [late]");
         return Plugin_Handled;
@@ -1253,7 +1196,7 @@ public Action Command_AddLagCompensation(int client, int argc)
     int entity = StringToInt(sArgs);
 
     bool late = false;
-    if(argc >= 2)
+    if (argc >= 2)
     {
         GetCmdArg(2, sArgs, sizeof(sArgs));
         late = view_as<bool>(StringToInt(sArgs));
@@ -1266,9 +1209,9 @@ public Action Command_AddLagCompensation(int client, int argc)
 
 public Action Command_CheckLagCompensated(int client, int argc)
 {
-    if(argc == 0)
+    if (argc == 0)
     {
-        for(int i = 0; i < g_iNumEntities; i++)
+        for (int i = 0; i < g_iNumEntities; i++)
         {
             char sClassname[64];
             GetEntityClassname(g_aEntityLagData[i].iEntity, sClassname, sizeof(sClassname));
@@ -1284,12 +1227,12 @@ public Action Command_CheckLagCompensated(int client, int argc)
         return Plugin_Handled;
     }
 
-    for(int iEntity = 0; iEntity < MAX_EDICTS; iEntity++)
+    for (int iEntity = 0; iEntity < MAX_EDICTS; iEntity++)
     {
         bool bDeleted = false;
-        for(int j = 1; j <= MaxClients; j++)
+        for (int j = 1; j <= MaxClients; j++)
         {
-            if(CheckBit(g_aaFilterClientSolidTouch, j * MAX_EDICTS + iEntity))
+            if (CheckBit(g_aaFilterClientSolidTouch, j * MAX_EDICTS + iEntity))
             {
                 bDeleted = true;
                 break;
@@ -1300,12 +1243,12 @@ public Action Command_CheckLagCompensated(int client, int argc)
         bool bBlockTriggerMoved = CheckBit(g_aBlockTriggerMoved, iEntity);
         bool bBlacklisted = CheckBit(g_aBlacklisted, iEntity);
 
-        if(bDeleted || bBlockPhysics || bBlockTriggerMoved || bBlacklisted)
+        if (bDeleted || bBlockPhysics || bBlockTriggerMoved || bBlacklisted)
         {
             int index = -1;
-            for(int j = 0; j < g_iNumEntities; j++)
+            for (int j = 0; j < g_iNumEntities; j++)
             {
-                if(g_aEntityLagData[j].iEntity == iEntity)
+                if (g_aEntityLagData[j].iEntity == iEntity)
                 {
                     index = j;
                     break;
@@ -1316,7 +1259,7 @@ public Action Command_CheckLagCompensated(int client, int argc)
             char sTargetname[64] = "INVALID";
             int iHammerID = -1;
 
-            if(IsValidEntity(iEntity))
+            if (IsValidEntity(iEntity))
             {
                 GetEntityClassname(iEntity, sClassname, sizeof(sClassname));
                 GetEntPropString(iEntity, Prop_Data, "m_iName", sTargetname, sizeof(sTargetname));
@@ -1331,35 +1274,21 @@ public Action Command_CheckLagCompensated(int client, int argc)
     return Plugin_Handled;
 }
 
-
 stock void PrintToBoth(const char[] format, any ...)
 {
     char buffer[254];
     VFormat(buffer, sizeof(buffer), format, 2);
     LogMessage(buffer);
-
-    //we don't wanna spam peoples consoles, just sourcemod log is fine
-    /*for(int client = 1; client <= MaxClients; client++)
-    {
-        if(IsClientInGame(client))
-        {
-            PrintToConsole(client, "%s", buffer);
-        }
-    }*/
 }
 
 public Action DisableLagCompTimer(Handle timer)
 {
-    for(int client = 1; client <= MaxClients; client++)
+    for (int client = 1; client <= MaxClients; client++)
     {
-        if(g_bDisableLagComp[client] && g_iDisableLagComp[client] < MAX_RECORDS)
-        {
+        if (g_bDisableLagComp[client] && g_iDisableLagComp[client] < MAX_RECORDS)
             g_iDisableLagComp[client]++;
-        }
-        else if(!g_bDisableLagComp[client] && g_iDisableLagComp[client] > 0)
-        {
+        else if (!g_bDisableLagComp[client] && g_iDisableLagComp[client] > 0)
             g_iDisableLagComp[client]--;
-        }
     }
 
     return Plugin_Continue;
@@ -1379,7 +1308,7 @@ public Action OnToggleLagCompSettings(int client, int args)
 
 public void ToggleLagCompSettings(int client)
 {
-    if(!client)
+    if (!client)
         return;
 
     char steamID[33];
@@ -1396,7 +1325,7 @@ public Action CheckLagComp(int client, int args)
 {
     if (args == 0)
         PrintToChat(client, " \x04[LagCompensation] \x01LagCompensation is %s for %N.", g_bDisableLagComp[client] ? "disabled" : "enabled (bosses only)", client);
-        
+
     if (args == 1)
     {
         char arg1[65];
@@ -1406,10 +1335,10 @@ public Action CheckLagComp(int client, int args)
         {
             return Plugin_Handled;
         }
-        
+
         PrintToChat(client, " \x04[LagCompensation] \x01LagCompensation is %s for %N.", g_bDisableLagComp[target] ? "disabled" : "enabled (bosses only)", target);
     }
-    
+
     return Plugin_Handled;
 }
 
@@ -1428,13 +1357,13 @@ public void ShowSettingsMenu(int client)
 
 public void MenuHandler_CookieMenu(int client, CookieMenuAction action, any info, char[] buffer, int maxlen)
 {
-    switch(action)
+    switch (action)
     {
-        case(CookieMenuAction_DisplayOption):
+        case (CookieMenuAction_DisplayOption):
         {
-            Format(buffer, maxlen, "LagCompensation", client);
+            Format (buffer, maxlen, "LagCompensation", client);
         }
-        case(CookieMenuAction_SelectOption):
+        case (CookieMenuAction_SelectOption):
         {
             ShowSettingsMenu(client);
         }
@@ -1443,22 +1372,22 @@ public void MenuHandler_CookieMenu(int client, CookieMenuAction action, any info
 
 public int MenuHandler_MainMenu(Menu menu, MenuAction action, int client, int selection)
 {
-    switch(action)
+    switch (action)
     {
-        case(MenuAction_Select):
+        case (MenuAction_Select):
         {
-            switch(selection)
+            switch (selection)
             {
                 case(0): ToggleLagCompSettings(client);
             }
 
             ShowSettingsMenu(client);
         }
-        case(MenuAction_Cancel):
+        case (MenuAction_Cancel):
         {
             ShowCookieMenu(client);
         }
-        case(MenuAction_End):
+        case (MenuAction_End):
         {
             delete menu;
         }
