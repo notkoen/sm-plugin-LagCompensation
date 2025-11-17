@@ -165,41 +165,59 @@ public void OnPluginStart()
 
     CreateConVar("sm_lagcomp_version", PLUGIN_VERSION, "LagCompensation Version", FCVAR_SPONLY|FCVAR_NOTIFY|FCVAR_DONTRECORD).SetString(PLUGIN_VERSION);
 
-    Handle hGameData = LoadGameConfigFile("LagCompensation.games");
-    if (!hGameData)
-        SetFailState("Failed to load LagCompensation gamedata.");
+    GameData hGameData = LoadGameConfigFile("LagCompensation.games");
+    if ((hGameData = new GameData("LagCompensation.games")) == null)
+    {
+        SetFailState("Failed to find \"LagCompensation.games\" game config!");
+        return;
+    }
 
     // CBaseEntity::CalcAbsolutePosition
     StartPrepSDKCall(SDKCall_Entity);
     if (!PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CalcAbsolutePosition"))
     {
         delete hGameData;
-        SetFailState("PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, \"CalcAbsolutePosition\") failed!");
+        SetFailState("Failed to setup SDKCall \"CalcAbsolutePosition\"!");
+        return;
     }
-    g_hCalcAbsolutePosition = EndPrepSDKCall();
+
+    if ((g_hCalcAbsolutePosition = EndPrepSDKCall()) == null)
+    {
+        delete hGameData;
+        SetFailState("Failed to end SDKCall \"CalcAbsolutePosition\"!");
+        return;
+    }
 
     // CCollisionProperty::MarkPartitionHandleDirty
     StartPrepSDKCall(SDKCall_Raw);
     if (!PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "MarkPartitionHandleDirty"))
     {
         delete hGameData;
-        SetFailState("PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, \"MarkPartitionHandleDirty\") failed!");
+        SetFailState("Failed to setup SDKCall \"MarkPartitionHandleDirty\"!");
+        return;
     }
-    g_hMarkPartitionHandleDirty = EndPrepSDKCall();
 
+    if ((g_hMarkPartitionHandleDirty = EndPrepSDKCall()) == null)
+    {
+        delete hGameData;
+        SetFailState("Failed to end SDKCall \"MarkPartitionHandleDirty\"!");
+        return;
+    }
 
     // ::UTIL_Remove
     g_hUTIL_Remove = DHookCreateFromConf(hGameData, "UTIL_Remove");
     if (!g_hUTIL_Remove)
     {
         delete hGameData;
-        SetFailState("Failed to setup detour for UTIL_Remove");
+        SetFailState("Failed to setup detour for \"UTIL_Remove\"!");
+        return;
     }
 
     if (!DHookEnableDetour(g_hUTIL_Remove, false, Detour_OnUTIL_Remove))
     {
         delete hGameData;
-        SetFailState("Failed to detour UTIL_Remove.");
+        SetFailState("Failed to detour \"UTIL_Remove\"!");
+        return;
     }
 
     // CCSGameRules::RestartRound
@@ -207,13 +225,15 @@ public void OnPluginStart()
     if (!g_hRestartRound)
     {
         delete hGameData;
-        SetFailState("Failed to setup detour for CCSGameRules__RestartRound");
+        SetFailState("Failed to setup detour for \"CCSGameRules__RestartRound\"!");
+        return;
     }
 
     if (!DHookEnableDetour(g_hRestartRound, false, Detour_OnRestartRound))
     {
         delete hGameData;
-        SetFailState("Failed to detour CCSGameRules__RestartRound.");
+        SetFailState("Failed to detour \"CCSGameRules__RestartRound\"!");
+        return;
     }
 
     // CLogicMeasureMovement::SetTarget
@@ -221,13 +241,15 @@ public void OnPluginStart()
     if (!g_hSetTarget)
     {
         delete hGameData;
-        SetFailState("Failed to setup detour for CLogicMeasureMovement__SetTarget");
+        SetFailState("Failed to setup detour for \"CLogicMeasureMovement__SetTarget\"!");
+        return;
     }
 
     if (!DHookEnableDetour(g_hSetTarget, false, Detour_OnSetTargetPre))
     {
         delete hGameData;
-        SetFailState("Failed to detour CLogicMeasureMovement__SetTarget.");
+        SetFailState("Failed to detour \"CLogicMeasureMovement__SetTarget\"!");
+        return;
     }
 
     // CLogicMeasureMovement::SetTarget (fix post hook crashing due to this pointer being overwritten)
@@ -235,13 +257,15 @@ public void OnPluginStart()
     if (!g_hSetTargetPost)
     {
         delete hGameData;
-        SetFailState("Failed to setup detour for CLogicMeasureMovement__SetTarget_post");
+        SetFailState("Failed to setup detour for \"CLogicMeasureMovement__SetTarget_post\"!");
+        return;
     }
 
     if (!DHookEnableDetour(g_hSetTargetPost, true, Detour_OnSetTargetPost))
     {
         delete hGameData;
-        SetFailState("Failed to detour CLogicMeasureMovement__SetTarget_post.");
+        SetFailState("Failed to detour \"CLogicMeasureMovement__SetTarget_post\"!");
+        return;
     }
 
     // CEntityTouchManager::FrameUpdatePostEntityThink
@@ -249,29 +273,31 @@ public void OnPluginStart()
     if (!g_hFrameUpdatePostEntityThink)
     {
         delete hGameData;
-        SetFailState("Failed to setup detour for CEntityTouchManager__FrameUpdatePostEntityThink");
+        SetFailState("Failed to setup detour for \"CEntityTouchManager__FrameUpdatePostEntityThink\"!");
+        return;
     }
 
     if (!DHookEnableDetour(g_hFrameUpdatePostEntityThink, false, Detour_OnFrameUpdatePostEntityThink))
     {
         delete hGameData;
-        SetFailState("Failed to detour CEntityTouchManager__FrameUpdatePostEntityThink.");
+        SetFailState("Failed to detour \"CEntityTouchManager__FrameUpdatePostEntityThink\"!");
+        return;
     }
-
 
     g_iNetworkableOuter = GameConfGetOffset(hGameData, "CServerNetworkableProperty::m_pOuter");
     if (g_iNetworkableOuter == -1)
     {
         delete hGameData;
         SetFailState("GameConfGetOffset(hGameData, \"CServerNetworkableProperty::m_pOuter\") failed!");
+        return;
     }
-
 
     int offset = GameConfGetOffset(hGameData, "CGameRules::EndGameFrame");
     if (offset == -1)
     {
         delete hGameData;
         SetFailState("Failed to find CGameRules::EndGameFrame offset.");
+        return;
     }
 
     // CGameRules::EndGameFrame
@@ -280,19 +306,23 @@ public void OnPluginStart()
     {
         delete hGameData;
         SetFailState("Failed to DHook CGameRules::EndGameFrame.");
+        return;
     }
+
     delete hGameData;
 
-
-    hGameData = LoadGameConfigFile("sdktools.games");
-    if (!hGameData)
-        SetFailState("Failed to load sdktools gamedata.");
+    if ((hGameData = new GameData("sdktools.games")) == null)
+    {
+        SetFailState("Failed to load \"sdktools.games\" game config!");
+        return;
+    }
 
     offset = GameConfGetOffset(hGameData, "Activate");
     if (offset == -1)
     {
         delete hGameData;
-        SetFailState("Failed to find Activate offset");
+        SetFailState("Failed to find \"Activate\" offset!");
+        return;
     }
 
     // CPhysForce::Activate
@@ -300,14 +330,16 @@ public void OnPluginStart()
     if (g_hActivate == INVALID_HANDLE)
     {
         delete hGameData;
-        SetFailState("Failed to DHookCreate Activate");
+        SetFailState("Failed to DHookCreate \"Activate\"!");
+        return;
     }
 
     offset = GameConfGetOffset(hGameData, "AcceptInput");
     if (offset == -1)
     {
         delete hGameData;
-        SetFailState("Failed to find AcceptInput offset.");
+        SetFailState("Failed to find \"AcceptInput\" offset!");
+        return;
     }
 
     // CBaseEntity::AcceptInput( const char *szInputName, CBaseEntity *pActivator, CBaseEntity *pCaller, variant_t Value, int outputID )
@@ -315,7 +347,8 @@ public void OnPluginStart()
     if (g_hAcceptInput == INVALID_HANDLE)
     {
         delete hGameData;
-        SetFailState("Failed to DHook AcceptInput.");
+        SetFailState("Failed to DHook \"AcceptInput\"!");
+        return;
     }
 
     DHookAddParam(g_hAcceptInput, HookParamType_CharPtr);
