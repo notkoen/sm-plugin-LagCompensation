@@ -155,7 +155,7 @@ int g_aaFilterClientSolidTouch[((MAXPLAYERS + 1) * MAX_EDICTS) / 32];
 int g_aBlockTriggerMoved[MAX_EDICTS / 32];
 int g_aBlacklisted[MAX_EDICTS / 32];
 
-Handle g_hCookie_DisableLagComp;
+Cookie g_hCookie_DisableLagComp;
 bool g_bDisableLagComp[MAXPLAYERS + 1];
 int g_iDisableLagComp[MAXPLAYERS + 1];
 
@@ -329,7 +329,7 @@ public void OnPluginStart()
     // Capability provider from https://github.com/alliedmodders/sourcemod/pull/1078
     g_bHasOnEntitySpawned = GetFeatureStatus(FeatureType_Capability, "SDKHook_OnEntitySpawned") == FeatureStatus_Available;
 
-    g_hCookie_DisableLagComp = RegClientCookie("disable_lagcomp", "", CookieAccess_Private);
+    g_hCookie_DisableLagComp = new Cookie("disable_lagcomp", "", CookieAccess_Private);
     RegConsoleCmd("sm_lagcomp", OnToggleLagCompSettings);
     RegConsoleCmd("sm_0ping", OnToggleLagCompSettings);
     RegConsoleCmd("sm_checklag", CheckLagComp);
@@ -454,7 +454,7 @@ public void OnClientConnected(int client)
 public void OnClientCookiesCached(int client)
 {
     char sBuffer[16];
-    GetClientCookie(client, g_hCookie_DisableLagComp, sBuffer, sizeof(sBuffer));
+    g_hCookie_DisableLagComp.Get(client, sBuffer, sizeof(sBuffer));
     g_bDisableLagComp[client] = sBuffer[0] ? true : false;
 }
 
@@ -1316,7 +1316,7 @@ public void ToggleLagCompSettings(int client)
     char steamID[33];
 
     g_bDisableLagComp[client] = !g_bDisableLagComp[client];
-    SetClientCookie(client, g_hCookie_DisableLagComp, g_bDisableLagComp[client] ? "1" : "");
+    g_hCookie_DisableLagComp.Set(client, g_bDisableLagComp[client] ? "1": "0");
     PrintToChat(client, " \x04[LagCompensation] \x01LagCompensation has been %s.", g_bDisableLagComp[client] ? "disabled, this is not recommended" : "enabled (bosses only)");
 
     GetClientAuthId(client, AuthId_Steam2, steamID, sizeof(steamID), true);
