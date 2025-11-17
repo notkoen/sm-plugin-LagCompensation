@@ -800,6 +800,8 @@ public MRESReturn Detour_OnFrameUpdatePostEntityThink()
         EFlags &= ~EFL_CHECK_UNTOUCH;
         SetEntData(g_aEntityLagData[i].iEntity, g_iEFlags, EFlags);
     }
+
+    return MRES_Ignored;
 }
 
 public void OnRunThinkFunctions(bool simulating)
@@ -1392,4 +1394,6 @@ public int MenuHandler_MainMenu(Menu menu, MenuAction action, int client, int se
             delete menu;
         }
     }
+
+    return 0;
 }
