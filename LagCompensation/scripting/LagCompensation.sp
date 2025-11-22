@@ -1,4 +1,3 @@
-#include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
 #include <PhysHooks>
@@ -718,7 +717,6 @@ public void OnEntityDestroyed(int entity)
 
     RemoveRecord(iIndex);
 }
-
 
 public MRESReturn Detour_OnUTIL_Remove(Handle hParams)
 {

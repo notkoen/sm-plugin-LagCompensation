@@ -1,249 +1,249 @@
 "Games"
 {
-	"cstrike"
-	{
-		"Signatures"
-		{
-			"::UTIL_Remove"
-			{
-				"library"		"server"
-				"linux"			"@_Z11UTIL_RemoveP18IServerNetworkable"
-			}
+    "cstrike"
+    {
+        "Signatures"
+        {
+            "::UTIL_Remove"
+            {
+                "library"       "server"
+                "linux"         "@_Z11UTIL_RemoveP18IServerNetworkable"
+            }
 
-			"CCSGameRules::RestartRound"
-			{
-				"library"		"server"
-				"linux"			"@_ZN12CCSGameRules12RestartRoundEv"
-			}
+            "CCSGameRules::RestartRound"
+            {
+                "library"       "server"
+                "linux"         "@_ZN12CCSGameRules12RestartRoundEv"
+            }
 
-			"CLogicMeasureMovement::SetTarget"
-			{
-				"library"		"server"
-				"linux"			"@_ZN21CLogicMeasureMovement9SetTargetEPKc"
-			}
+            "CLogicMeasureMovement::SetTarget"
+            {
+                "library"       "server"
+                "linux"         "@_ZN21CLogicMeasureMovement9SetTargetEPKc"
+            }
 
-			"CEntityTouchManager::FrameUpdatePostEntityThink"
-			{
-				"library"		"server"
-				"linux"			"@_ZN19CEntityTouchManager26FrameUpdatePostEntityThinkEv"
-			}
+            "CEntityTouchManager::FrameUpdatePostEntityThink"
+            {
+                "library"       "server"
+                "linux"         "@_ZN19CEntityTouchManager26FrameUpdatePostEntityThinkEv"
+            }
 
-			"CalcAbsolutePosition"
-			{
-				"library"		"server"
-				"linux"			"@_ZN11CBaseEntity20CalcAbsolutePositionEv"
-			}
+            "CalcAbsolutePosition"
+            {
+                "library"       "server"
+                "linux"         "@_ZN11CBaseEntity20CalcAbsolutePositionEv"
+            }
 
-			"MarkPartitionHandleDirty"
-			{
-				"library"		"server"
-				"linux"			"@_ZN18CCollisionProperty24MarkPartitionHandleDirtyEv"
-			}
-		}
+            "MarkPartitionHandleDirty"
+            {
+                "library"       "server"
+                "linux"         "@_ZN18CCollisionProperty24MarkPartitionHandleDirtyEv"
+            }
+        }
 
-		"Functions"
-		{
-			"UTIL_Remove"
-			{
-				"signature"		"::UTIL_Remove"
-				"return"		"void"
-				"callconv"		"cdecl"
-				"arguments"
-				{
-					"oldObj"
-					{
-						"type"	"objectptr"
-					}
-				}
-			}
+        "Functions"
+        {
+            "UTIL_Remove"
+            {
+                "signature"     "::UTIL_Remove"
+                "return"        "void"
+                "callconv"      "cdecl"
+                "arguments"
+                {
+                    "oldObj"
+                    {
+                        "type"  "objectptr"
+                    }
+                }
+            }
 
-			"CCSGameRules__RestartRound"
-			{
-				"signature"		"CCSGameRules::RestartRound"
-				"callconv"		"thiscall"
-				"return"		"void"
-				"this"			"ignore"
-			}
+            "CCSGameRules__RestartRound"
+            {
+                "signature"     "CCSGameRules::RestartRound"
+                "callconv"      "thiscall"
+                "return"        "void"
+                "this"          "ignore"
+            }
 
-			"CEntityTouchManager__FrameUpdatePostEntityThink"
-			{
-				"signature"		"CEntityTouchManager::FrameUpdatePostEntityThink"
-				"callconv"		"cdecl"
-				"return"		"void"
-			}
+            "CEntityTouchManager__FrameUpdatePostEntityThink"
+            {
+                "signature"     "CEntityTouchManager::FrameUpdatePostEntityThink"
+                "callconv"      "cdecl"
+                "return"        "void"
+            }
 
-			"CLogicMeasureMovement__SetTarget"
-			{
-				"signature"		"CLogicMeasureMovement::SetTarget"
-				"callconv"		"thiscall"
-				"return"		"void"
-				"this"			"entity"
-				"arguments"
-				{
-					"pName"
-					{
-						"type"	"charptr"
-					}
-				}
-			}
+            "CLogicMeasureMovement__SetTarget"
+            {
+                "signature"     "CLogicMeasureMovement::SetTarget"
+                "callconv"      "thiscall"
+                "return"        "void"
+                "this"          "entity"
+                "arguments"
+                {
+                    "pName"
+                    {
+                        "type"  "charptr"
+                    }
+                }
+            }
 
-			"CLogicMeasureMovement__SetTarget_post"
-			{
-				"signature"		"CLogicMeasureMovement::SetTarget"
-				"callconv"		"thiscall"
-				"return"		"void"
-				"this"			"ignore"
-				"arguments"
-				{
-					"pName"
-					{
-						"type"	"charptr"
-					}
-				}
-			}
-		}
+            "CLogicMeasureMovement__SetTarget_post"
+            {
+                "signature"     "CLogicMeasureMovement::SetTarget"
+                "callconv"      "thiscall"
+                "return"        "void"
+                "this"          "ignore"
+                "arguments"
+                {
+                    "pName"
+                    {
+                        "type"  "charptr"
+                    }
+                }
+            }
+        }
 
-		"Offsets"
-		{
-			"CServerNetworkableProperty::m_pOuter"
-			{
-				"linux"			"8"
-				"windows"		"8"
-			}
+        "Offsets"
+        {
+            "CServerNetworkableProperty::m_pOuter"
+            {
+                "linux"         "8"
+                "windows"       "8"
+            }
 
-			"CGameRules::EndGameFrame"
-			{
-				"linux"			"49"
-				"windows"		"48"
-			}
-		}
-	}
+            "CGameRules::EndGameFrame"
+            {
+                "linux"         "49"
+                "windows"       "48"
+            }
+        }
+    }
 
-	"csgo"
-	{
-		"Signatures"
-		{
-			"::UTIL_Remove"
-			{
-				"library"		"server"
-				"linux"			"\x55\x89\xE5\x57\x56\x53\x83\xEC\x2C\x8B\x5D\x08\x85\xDB"
-				"windows"		"\x55\x8B\xEC\x51\x56\x8B\xF1\x85\xF6\x0F\x84\x2A\x2A\x2A\x2A"
-			}
+    "csgo"
+    {
+        "Signatures"
+        {
+            "::UTIL_Remove"
+            {
+                "library"       "server"
+                "linux"         "\x55\x89\xE5\x57\x56\x53\x83\xEC\x2C\x8B\x5D\x08\x85\xDB"
+                "windows"       "\x55\x8B\xEC\x51\x56\x8B\xF1\x85\xF6\x0F\x84\x2A\x2A\x2A\x2A"
+            }
 
-			"CCSGameRules::RestartRound"
-			{
-				"library"		"server"
-				"linux"			"\x55\x89\xE5\x57\x56\x53\x81\xEC\xD8\x01\x00\x00\x8B\x45\x08"
-				"windows"		"\x55\x8B\xEC\x83\xE4\xF8\x81\xEC\x20\x2A\x00\x00\x56\x8B\xF1\x8B\x0D\x2A\x2A\x2A\x2A"
-			}
+            "CCSGameRules::RestartRound"
+            {
+                "library"       "server"
+                "linux"         "\x55\x89\xE5\x57\x56\x53\x81\xEC\xD8\x01\x00\x00\x8B\x45\x08"
+                "windows"       "\x55\x8B\xEC\x83\xE4\xF8\x81\xEC\x20\x2A\x00\x00\x56\x8B\xF1\x8B\x0D\x2A\x2A\x2A\x2A"
+            }
 
-			"CLogicMeasureMovement::SetTarget"
-			{
-				"library"		"server"
-				"linux"			"\x55\x89\xE5\x56\x53\x8B\x5D\x0C\x83\xEC\x04\x8B\x75\x08\x6A\x00\x6A\x00\x6A\x00\x6A\x00\x53\x6A\x00\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x83\xC4\x20\x85\xC0\x74\x2A\x8B\x10\x8B\x52\x0C\x81\xFA\x2A\x2A\x2A\x2A\x75\x2A\x05\x08\x03\x00\x00\x8B\x00\x8B\x0D\x2A\x2A\x2A\x2A\x89\x86\xBC\x03\x00\x00"
-				"windows"		"\x55\x8B\xEC\x51\x53\x8B\x5D\x08\x56\x8B\xF1\x89\x75\xFC\x57\x85\xDB\x74\x2A\x8A\x03\x84\xC0\x74\x2A\x3C\x21\x75\x2A\x6A\x00\x6A\x00\x6A\x00\x53\xE8\x2A\x2A\x2A\x2A\x8B\xF8\xEB\x2A\x8B\x35\x2A\x2A\x2A\x2A\x85\xF6\x74\x2A\x8B\x3E\x85\xFF\x75\x2A\x68\x2A\x2A\x2A\x2A\xFF\x15\x2A\x2A\x2A\x2A\x83\xC4\x04\xEB\x2A\x8B\x56\x10\x85\xD2\x74\x2A\x3B\xD3\x74\x2A\x8B\xCB\xE8\x2A\x2A\x2A\x2A\x84\xC0\x75\x2A\x8B\x76\x0C\x85\xF6\x75\x2A\x8B\x75\xFC\x33\xFF\x85\xFF\x74\x2A\x8B\x07\x8B\xCF\xFF\x50\x08\x8B\x00\x89\x86\xA4\x03\x00\x00"
-			}
+            "CLogicMeasureMovement::SetTarget"
+            {
+                "library"       "server"
+                "linux"         "\x55\x89\xE5\x56\x53\x8B\x5D\x0C\x83\xEC\x04\x8B\x75\x08\x6A\x00\x6A\x00\x6A\x00\x6A\x00\x53\x6A\x00\x68\x2A\x2A\x2A\x2A\xE8\x2A\x2A\x2A\x2A\x83\xC4\x20\x85\xC0\x74\x2A\x8B\x10\x8B\x52\x0C\x81\xFA\x2A\x2A\x2A\x2A\x75\x2A\x05\x08\x03\x00\x00\x8B\x00\x8B\x0D\x2A\x2A\x2A\x2A\x89\x86\xBC\x03\x00\x00"
+                "windows"       "\x55\x8B\xEC\x51\x53\x8B\x5D\x08\x56\x8B\xF1\x89\x75\xFC\x57\x85\xDB\x74\x2A\x8A\x03\x84\xC0\x74\x2A\x3C\x21\x75\x2A\x6A\x00\x6A\x00\x6A\x00\x53\xE8\x2A\x2A\x2A\x2A\x8B\xF8\xEB\x2A\x8B\x35\x2A\x2A\x2A\x2A\x85\xF6\x74\x2A\x8B\x3E\x85\xFF\x75\x2A\x68\x2A\x2A\x2A\x2A\xFF\x15\x2A\x2A\x2A\x2A\x83\xC4\x04\xEB\x2A\x8B\x56\x10\x85\xD2\x74\x2A\x3B\xD3\x74\x2A\x8B\xCB\xE8\x2A\x2A\x2A\x2A\x84\xC0\x75\x2A\x8B\x76\x0C\x85\xF6\x75\x2A\x8B\x75\xFC\x33\xFF\x85\xFF\x74\x2A\x8B\x07\x8B\xCF\xFF\x50\x08\x8B\x00\x89\x86\xA4\x03\x00\x00"
+            }
 
-			"CEntityTouchManager::FrameUpdatePostEntityThink"
-			{
-				"library"		"server"
-				"linux"			"\x55\x89\xE5\x57\x56\x53\x83\xEC\x2C\x8B\x5D\x08\x65\xA1\x14\x00\x00\x00\x89\x45\xE4\x31\xC0\xA1\x2A\x2A\x2A\x2A"
-				"windows"		"\x55\x8B\xEC\x53\x56\x57\x8B\x3D\x2A\x2A\x2A\x2A\x85\xFF"
-			}
+            "CEntityTouchManager::FrameUpdatePostEntityThink"
+            {
+                "library"       "server"
+                "linux"         "\x55\x89\xE5\x57\x56\x53\x83\xEC\x2C\x8B\x5D\x08\x65\xA1\x14\x00\x00\x00\x89\x45\xE4\x31\xC0\xA1\x2A\x2A\x2A\x2A"
+                "windows"       "\x55\x8B\xEC\x53\x56\x57\x8B\x3D\x2A\x2A\x2A\x2A\x85\xFF"
+            }
 
-			"CalcAbsolutePosition"
-			{
-				"library"		"server"
-				"linux"			"\x55\x89\xE5\x57\x56\x53\x83\xEC\x7C\x8B\x5D\x08\x8B\x83\xDC\x00\x00\x00"
-				"windows"		"\x55\x8B\xEC\x83\xE4\xF0\x83\xEC\x68\x56\x8B\xF1"
-			}
+            "CalcAbsolutePosition"
+            {
+                "library"       "server"
+                "linux"         "\x55\x89\xE5\x57\x56\x53\x83\xEC\x7C\x8B\x5D\x08\x8B\x83\xDC\x00\x00\x00"
+                "windows"       "\x55\x8B\xEC\x83\xE4\xF0\x83\xEC\x68\x56\x8B\xF1"
+            }
 
-			"MarkPartitionHandleDirty"
-			{
-				"library"		"server"
-				"linux"			"\x55\x89\xE5\x57\x56\x53\x83\xEC\x2C\x8B\x45\x08\x8B\x40\x04\xF6\x80\xDD\x00\x00\x00\x80"
-				"windows"		"\x56\x8B\xF1\x8B\x4E\x04\x8B\x51\x1C"
-			}
-		}
+            "MarkPartitionHandleDirty"
+            {
+                "library"       "server"
+                "linux"         "\x55\x89\xE5\x57\x56\x53\x83\xEC\x2C\x8B\x45\x08\x8B\x40\x04\xF6\x80\xDD\x00\x00\x00\x80"
+                "windows"       "\x56\x8B\xF1\x8B\x4E\x04\x8B\x51\x1C"
+            }
+        }
 
-		"Functions"
-		{
-			"UTIL_Remove"
-			{
-				"signature"		"::UTIL_Remove"
-				"return"		"void"
-				"callconv"		"cdecl"
-				"arguments"
-				{
-					"oldObj"
-					{
-						"type"	"objectptr"
-					}
-				}
-				"windows"
-				{
-					"callconv"	"fastcall"
-				}
-			}
+        "Functions"
+        {
+            "UTIL_Remove"
+            {
+                "signature"     "::UTIL_Remove"
+                "return"        "void"
+                "callconv"      "cdecl"
+                "arguments"
+                {
+                    "oldObj"
+                    {
+                        "type"  "objectptr"
+                    }
+                }
+                "windows"
+                {
+                    "callconv"  "fastcall"
+                }
+            }
 
-			"CCSGameRules__RestartRound"
-			{
-				"signature"		"CCSGameRules::RestartRound"
-				"callconv"		"thiscall"
-				"return"		"void"
-			}
+            "CCSGameRules__RestartRound"
+            {
+                "signature"     "CCSGameRules::RestartRound"
+                "callconv"      "thiscall"
+                "return"        "void"
+            }
 
-			"CEntityTouchManager__FrameUpdatePostEntityThink"
-			{
-				"signature"		"CEntityTouchManager::FrameUpdatePostEntityThink"
-				"callconv"		"cdecl"
-				"return"		"void"
-			}
+            "CEntityTouchManager__FrameUpdatePostEntityThink"
+            {
+                "signature"     "CEntityTouchManager::FrameUpdatePostEntityThink"
+                "callconv"      "cdecl"
+                "return"        "void"
+            }
 
-			"CLogicMeasureMovement__SetTarget"
-			{
-				"signature"		"CLogicMeasureMovement::SetTarget"
-				"callconv"		"thiscall"
-				"return"		"void"
-				"this"			"entity"
-				"arguments"
-				{
-					"pName"
-					{
-						"type"	"charptr"
-					}
-				}
-			}
+            "CLogicMeasureMovement__SetTarget"
+            {
+                "signature"     "CLogicMeasureMovement::SetTarget"
+                "callconv"      "thiscall"
+                "return"        "void"
+                "this"          "entity"
+                "arguments"
+                {
+                    "pName"
+                    {
+                        "type"  "charptr"
+                    }
+                }
+            }
 
-			"CLogicMeasureMovement__SetTarget_post"
-			{
-				"signature"		"CLogicMeasureMovement::SetTarget"
-				"callconv"		"thiscall"
-				"return"		"void"
-				"this"			"ignore"
-				"arguments"
-				{
-					"pName"
-					{
-						"type"	"charptr"
-					}
-				}
-			}
-		}
+            "CLogicMeasureMovement__SetTarget_post"
+            {
+                "signature"     "CLogicMeasureMovement::SetTarget"
+                "callconv"      "thiscall"
+                "return"        "void"
+                "this"          "ignore"
+                "arguments"
+                {
+                    "pName"
+                    {
+                        "type"  "charptr"
+                    }
+                }
+            }
+        }
 
-		"Offsets"
-		{
-			"CServerNetworkableProperty::m_pOuter"
-			{
-				"linux"			"8"
-				"windows"		"8"
-			}
+        "Offsets"
+        {
+            "CServerNetworkableProperty::m_pOuter"
+            {
+                "linux"         "8"
+                "windows"       "8"
+            }
 
-			"CGameRules::EndGameFrame"
-			{
-				"linux"			"48"
-				"windows"		"47"
-			}
-		}
-	}
+            "CGameRules::EndGameFrame"
+            {
+                "linux"         "48"
+                "windows"       "47"
+            }
+        }
+    }
 }
