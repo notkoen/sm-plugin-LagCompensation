@@ -3,8 +3,10 @@
 #include <PhysHooks>
 #include <dhooks>
 #include <clientprefs>
+#include <multicolors>
 
 #define PLUGIN_VERSION "1.0.5-NiDE"
+#define PLUGIN_PREFIX "{green}[LagCompensation]"
 
 #define SetBit(%1,%2)       ((%1)[(%2) >> 5] |= (1 << ((%2) & 31)))
 #define ClearBit(%1,%2)     ((%1)[(%2) >> 5] &= ~(1 << ((%2) & 31)))
@@ -161,6 +163,7 @@ int g_iDisableLagComp[MAXPLAYERS + 1];
 public void OnPluginStart()
 {
     LoadTranslations("common.phrases");
+    LoadTranslations("LagCompensation.phrases");
 
     CreateConVar("sm_lagcomp_version", PLUGIN_VERSION, "LagCompensation Version", FCVAR_SPONLY|FCVAR_NOTIFY|FCVAR_DONTRECORD).SetString(PLUGIN_VERSION);
 
@@ -1342,7 +1345,7 @@ public void ToggleLagCompSettings(int client)
 
     g_bDisableLagComp[client] = !g_bDisableLagComp[client];
     g_hCookie_DisableLagComp.Set(client, g_bDisableLagComp[client] ? "1": "");
-    PrintToChat(client, " \x04[LagCompensation] \x01LagCompensation has been %s.", g_bDisableLagComp[client] ? "disabled, this is not recommended!" : "enabled (bosses only)");
+    CPrintToChat(client, "%s {white}Lag compensation has been %s", PLUGIN_PREFIX, g_bDisableLagComp[client] ? "{red}disabled {white}(not recommended!)" : "{green}enabled (bosses only)");
 
     GetClientAuthId(client, AuthId_Steam2, steamID, sizeof(steamID), true);
     PrintToBoth("%N[%s] has %s LagCompensation", client, steamID, g_bDisableLagComp[client] ? "disabled" : "enabled");
@@ -1351,7 +1354,7 @@ public void ToggleLagCompSettings(int client)
 public Action CheckLagComp(int client, int args)
 {
     if (args == 0)
-        PrintToChat(client, " \x04[LagCompensation] \x01LagCompensation is %s for %N.", g_bDisableLagComp[client] ? "disabled" : "enabled (bosses only)", client);
+        CPrintToChat(client, "%s {white}You have %s {white}lag compensation.", PLUGIN_PREFIX, g_bDisableLagComp[client] ? "{red}disabled" : "{green}enabled (bosses only)");
 
     if (args == 1)
     {
@@ -1359,11 +1362,9 @@ public Action CheckLagComp(int client, int args)
         GetCmdArg(1, arg1, sizeof(arg1));
         int target = FindTarget(client, arg1, false, false);
         if (target == -1)
-        {
             return Plugin_Handled;
-        }
 
-        PrintToChat(client, " \x04[LagCompensation] \x01LagCompensation is %s for %N.", g_bDisableLagComp[target] ? "disabled" : "enabled (bosses only)", target);
+        CPrintToChat(client, "%s {white}Lag compensation is %s {white}for {lightblue}%N{white}.", PLUGIN_PREFIX, g_bDisableLagComp[target] ? "{red}disabled" : "{green}enabled (bosses only)", target);
     }
 
     return Plugin_Handled;
