@@ -1086,7 +1086,7 @@ bool AddEntityForLagCompensation(int iEntity, bool bLateKill)
 
         int iHammerID = GetEntProp(iEntity, Prop_Data, "m_iHammerID");
 
-        PrintToBoth("[%d] OUT OF LAGCOMP SLOTS entity %d (%s)\"%s\"(#%d)", GetGameTickCount(), iEntity, sClassname, sTargetname, iHammerID);
+        LogMessage("[%d] OUT OF LAGCOMP SLOTS entity %d (%s)\"%s\"(#%d)", GetGameTickCount(), iEntity, sClassname, sTargetname, iHammerID);
         return false;
     }
 
@@ -1121,7 +1121,7 @@ bool AddEntityForLagCompensation(int iEntity, bool bLateKill)
 
         int iHammerID = GetEntProp(iEntity, Prop_Data, "m_iHammerID");
 
-        PrintToBoth("[%d] added entity %d (%s)\"%s\"(#%d) under index %d", GetGameTickCount(), iEntity, sClassname, sTargetname, iHammerID, i);
+        LogMessage("[%d] added entity %d (%s)\"%s\"(#%d) under index %d", GetGameTickCount(), iEntity, sClassname, sTargetname, iHammerID, i);
     }
 
     return true;
@@ -1154,7 +1154,7 @@ void RemoveRecord(int index)
 
         int iHammerID = GetEntProp(g_aEntityLagData[index].iEntity, Prop_Data, "m_iHammerID");
 
-        PrintToBoth("[%d] RemoveRecord %d / %d (%s)\"%s\"(#%d), num: %d", GetGameTickCount(), index, g_aEntityLagData[index].iEntity, sClassname, sTargetname, iHammerID, g_iNumEntities);
+        LogMessage("[%d] RemoveRecord %d / %d (%s)\"%s\"(#%d), num: %d", GetGameTickCount(), index, g_aEntityLagData[index].iEntity, sClassname, sTargetname, iHammerID, g_iNumEntities);
     }
 
     g_aLagCompensated[iEntity] = -1;
@@ -1310,13 +1310,6 @@ public Action Command_CheckLagCompensated(int client, int argc)
     return Plugin_Handled;
 }
 
-stock void PrintToBoth(const char[] format, any ...)
-{
-    char buffer[254];
-    VFormat(buffer, sizeof(buffer), format, 2);
-    LogMessage(buffer);
-}
-
 public Action DisableLagCompTimer(Handle timer)
 {
     for (int client = 1; client <= MaxClients; client++)
@@ -1348,7 +1341,7 @@ public void ToggleLagCompSettings(int client)
     CPrintToChat(client, "%s {white}Lag compensation has been %s", PLUGIN_PREFIX, g_bDisableLagComp[client] ? "{red}disabled {white}(not recommended!)" : "{green}enabled (bosses only)");
 
     GetClientAuthId(client, AuthId_Steam2, steamID, sizeof(steamID), true);
-    PrintToBoth("%N[%s] has %s LagCompensation", client, steamID, g_bDisableLagComp[client] ? "disabled" : "enabled");
+    LogMessage("%N[%s] has %s LagCompensation", client, steamID, g_bDisableLagComp[client] ? "disabled" : "enabled");
 }
 
 public Action CheckLagComp(int client, int args)
