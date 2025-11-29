@@ -163,11 +163,10 @@ int g_iDisableLagComp[MAXPLAYERS + 1];
 public void OnPluginStart()
 {
     LoadTranslations("common.phrases");
-    LoadTranslations("LagCompensation.phrases");
 
     CreateConVar("sm_lagcomp_version", PLUGIN_VERSION, "LagCompensation Version", FCVAR_SPONLY|FCVAR_NOTIFY|FCVAR_DONTRECORD).SetString(PLUGIN_VERSION);
 
-    GameData hGameData = LoadGameConfigFile("LagCompensation.games");
+    GameData hGameData;
     if ((hGameData = new GameData("LagCompensation.games")) == null)
     {
         SetFailState("Failed to find \"LagCompensation.games\" game config!");
